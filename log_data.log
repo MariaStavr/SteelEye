@@ -1,0 +1,18 @@
+INFO:root:Data retrieved successfully from: https://registers.esma.europa.eu/solr/esma_registers_firds_files/select?q=*&fq=publication_date:%5B2021-01-17T00:00:00Z+TO+2021-01-19T23:59:59Z%5D&wt=xml&indent=true&start=0&rows=100
+INFO:root:Beautiful soup object created successfully
+INFO:root:Zip file URL: http://firds.esma.europa.eu/firds/DLTINS_20210117_01of01.zip
+INFO:root:Data retrieved successfully from: http://firds.esma.europa.eu/firds/DLTINS_20210117_01of01.zip
+INFO:root:Absolute path of the first file present in the zip file: C:\Users\stavr\OneDrive\Desktop\steeleye\final project\DLTINS_20210117_01of01.xml
+INFO:root:Data extracted from XML file
+INFO:root:csv file created
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+INFO:root:csv file uploaded to s3
+INFO:root:Data retrieved successfully from: https://registers.esma.europa.eu/solr/esma_registers_firds_files/select?q=*&fq=publication_date:%5B2021-01-17T00:00:00Z+TO+2021-01-19T23:59:59Z%5D&wt=xml&indent=true&start=0&rows=100
+INFO:root:Beautiful soup object created successfully
+INFO:root:Zip file URL: http://firds.esma.europa.eu/firds/DLTINS_20210117_01of01.zip
+INFO:root:Data retrieved successfully from: http://firds.esma.europa.eu/firds/DLTINS_20210117_01of01.zip
+INFO:root:Absolute path of the first file present in the zip file: C:\Users\stavr\OneDrive\Desktop\steeleye\final project\DLTINS_20210117_01of01.xml
+INFO:root:Data extracted from XML file
+INFO:root:csv file created
+INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+INFO:root:csv file uploaded to s3

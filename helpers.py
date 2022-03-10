@@ -5,25 +5,31 @@ from bs4 import BeautifulSoup
 import zipfile
 import io
 import logging
+import boto3
 
-logging.basicConfig(filename='log_data.log', level= logging.DEBUG)
+logging.basicConfig(filename='log_data.log', level=logging.INFO)
 
-def get_data():
+csv_name='csv_data.csv'
+
+def get_data(url):
     '''
     Returns content from the get request.
 
+    Parameters:
+        url(str): string containing url.
+
     Returns:
-    data(string): content present in the request response.
+        data(string): content present in the request response.
 
     '''
     try:
-        url = 'https://registers.esma.europa.eu/solr/esma_registers_firds_files/select?q=*&fq=publication_date:%5B2021-01-17T00:00:00Z+TO+2021-01-19T23:59:59Z%5D&wt=xml&indent=true&start=0&rows=100'
         response = requests.get(url)
-        #if response.ok:
         data = response.content
+        logging.info('Data retrieved successfully from: {}'.format(url))
         return data
 
     except requests.exceptions.Timeout:
+        logging.info('Data could be retrieved')
         return 'Bad response'
     
 
@@ -35,12 +41,12 @@ def create_beautifulSoup_object(content):
         content (str):string containing data.
 
     Returns:
-    soup: The beautiful soup object containg the data.
+        soup: The beautiful soup object containg the data.
 
     '''
     try:
         soup = BeautifulSoup(content, 'html.parser')
-        print(soup)
+        logging.info('Beautiful soup object created successfully')
         return soup
 
     except (RuntimeError, TypeError, NameError):
@@ -66,25 +72,26 @@ def get_zip_link(data):
     firstElement = fileTypeDLTINS[0].parent
     firstElementLink = firstElement.find(attrs={'name':'download_link'})
     zip_url=firstElementLink.get_text()
+    logging.info('Zip file URL: {}'.format(zip_url))
     return zip_url
 
-def extract_and_get_xml_path(url):
+def extract_and_get_xml_path(zipData):
     '''
     Extracts the zip file and returns the absolute path of the xml file present in the zip.
 
     Parameters:
-        url (string):The string containing the zip file url.
+        zipData (zipFile): Zip file containing data.
 
     Returns:
         abs_path(str):The string which contains the absolute path of the xml inside the zip file.   
     '''
 
-    zipData = requests.get(url)
-    z = zipfile.ZipFile(io.BytesIO(zipData.content))
+    z = zipfile.ZipFile(io.BytesIO(zipData))
     z.extractall()
     xml_filename = z.namelist()[0]
     
     abs_path = os.path.abspath(xml_filename)
+    logging.info('Absolute path of the first file present in the zip file: {}'.format(abs_path))
     return abs_path
 
 def extract_data_from_xml(path):
@@ -102,6 +109,7 @@ def extract_data_from_xml(path):
         xml_content=file.read()
     soup = BeautifulSoup(xml_content, "xml")
     data = [[values.find('Id').getText(),values.FinInstrmGnlAttrbts.find('FullNm').getText(), values.FinInstrmGnlAttrbts.find('ClssfctnTp').getText(), values.FinInstrmGnlAttrbts.find('CmmdtyDerivInd').getText(),values.FinInstrmGnlAttrbts.find('NtnlCcy').getText(), values.find('Issr').getText() ]for values in soup.find_all('TermntdRcrd')]
+    logging.info('Data extracted from XML file')
     return data
 
 def export_as_csv(data):
@@ -112,7 +120,25 @@ def export_as_csv(data):
         data (list):list containing the xml data.
   
     '''
-    
     df = pd.DataFrame(data, columns=['id', 'fullname','ClssfctnTp','CmmdtyDerivInd', 'NtnlCcy', 'Issr' ])
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    df.to_csv(dir_path + "/csv_data.csv", index=False)
+    df.to_csv(dir_path + "/" + csv_name, index=False)
+    logging.info('csv file created')
+    
+
+def upload_csvFile_to_s3():
+    s3_resource = boto3.resource("s3")
+
+    bucket_list=[]
+
+    for bucket in s3_resource.buckets.all():
+        bucket_list.append(bucket)
+
+    s3 = boto3.client("s3")
+
+    s3.upload_file(
+    Filename=csv_name,
+    Bucket=bucket_list[0].name,
+    Key=csv_name,
+    )
+    logging.info('csv file uploaded to s3')
