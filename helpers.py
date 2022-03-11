@@ -22,6 +22,7 @@ def get_data(url):
         data(string): content present in the request response.
 
     '''
+    
     try:
         response = requests.get(url)
         data = response.content
@@ -44,6 +45,7 @@ def create_beautifulSoup_object(content):
         soup: The beautiful soup object containg the data.
 
     '''
+
     try:
         soup = BeautifulSoup(content, 'html.parser')
         logging.info('Beautiful soup object created successfully')
@@ -91,6 +93,7 @@ def extract_and_get_xml_path(zipData):
     Returns:
         abs_path(str):The string which contains the absolute path of the xml inside the zip file.   
     '''
+
     try:
         z = zipfile.ZipFile(io.BytesIO(zipData))
         z.extractall()

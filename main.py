@@ -1,6 +1,11 @@
 from helpers import *
 
 def run():
+    '''
+    Aggregates all the methods needed to run the application.
+
+    '''
+
     url = 'https://registers.esma.europa.eu/solr/esma_registers_firds_files/select?q=*&fq=publication_date:%5B2021-01-17T00:00:00Z+TO+2021-01-19T23:59:59Z%5D&wt=xml&indent=true&start=0&rows=100'
     data = get_data(url)
     bs_object = create_beautifulSoup_object(data)
